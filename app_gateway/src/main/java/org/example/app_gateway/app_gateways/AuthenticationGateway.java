@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.user.authentication.AuthService;
 import org.example.user.authentication.dtos.AuthRequest;
 import org.example.user.authentication.dtos.RegisterRequest;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-
+@Slf4j
 @RequestMapping("api/v1/auth")
 @Tag(name="Auth Controller")
 public class AuthenticationGateway {
@@ -33,11 +34,15 @@ public class AuthenticationGateway {
     }
     @PostMapping(value ="/login" )
     public ResponseEntity<ApiResponse>login(
-           @Valid @RequestBody AuthRequest authRequest
+            @RequestBody AuthRequest authRequest
     ){
+        log.info("Login endpoint hit with: {}", authRequest.getEmail());
+        System.out.println("it reach this place");
         return ResponseEntity.ok(
+
                 authService.authenticateAndGetToken(authRequest)
         );
+
     }
 
 }
