@@ -2,9 +2,7 @@ package org.example.app_gateway.app_gateways;
 
 //import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.user.authentication.AuthService;
 import org.example.user.authentication.dtos.AuthRequest;
