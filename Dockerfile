@@ -1,7 +1,7 @@
 # Stage 1: Build
 FROM maven:3.9.5-eclipse-temurin-17 AS build
 COPY . .
-RUN mvn clean package -DskipTests=false
+RUN mvn package -DskipTests
 
 FROM openjdk:17
 ENV PROFILE=host
