@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.user.authentication.dtos.AuthRequest;
 import org.example.user.authentication.dtos.AuthResponse;
 import org.example.user.authentication.dtos.RegisterRequest;
+import org.example.user.authentication.dtos.UserDto;
 import org.example.user.authentication.security.JwtService;
 import org.example.user.user.dto.ApiResponse;
 import org.example.user.user.enums.Role;
@@ -18,6 +19,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -40,36 +44,47 @@ public class AuthServiceImpl implements  AuthService {
                 .media(registerRequest.getMedia())
                 .roles(Role.USER)
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .createdAt(LocalDate.now())
                 .build();
 
         User savedUser = userRepository.save(user);
+        try {
+            if(savedUser.isEnabled()){
+                userService.sendVerificationMail(user);
+            }
+            return  new ApiResponse(201,"Successful! Please check your email to complete registration", registerRequest );
 
-        return  new ApiResponse(201,"Successful! Please check your email to complete registration", registerRequest );
+        }catch (RuntimeException e){
+            throw new RuntimeException("Registration failed");
+        }
 
     }
 
     @Override
     public ApiResponse authenticateAndGetToken(AuthRequest request) {
-        System.out.println("e no reach here ooo");
         Authentication authentication= authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
-        log.info("this is the auth request {}", request);
-
         var user =userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new EntityNotFoundException("user not found"));
 
-        log.info("this is this user {}", user);
-
         var jwtToken= jwtService.generateToken(user);
-        System.out.println("i dont understand oo");
-       var authResponse= AuthResponse.builder()
-                .token(jwtToken)
-                .user(user)
+        var userDto= UserDto.builder()
+                .id(user.getId())
+                .isEnabled(user.isEnabled())
+                .emailAddress(user.getEmailAddress())
+                .lastName(user.getLastName())
+                .firstName(user.getFirstName())
+                .media(user.getMedia().toString())
                 .build();
+       var authResponse= AuthResponse.builder()
+               .token(jwtToken)
+               .userDto(userDto)
+                .build();
+
         return ApiResponse.builder()
                 .data(authResponse)
                 .statusCode(200)
