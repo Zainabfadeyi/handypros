@@ -58,10 +58,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
         return http.build();
     }
-    @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new CustomAuthenticationEntryPoint();
-    }
+
 
 
 }

@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private Media media;
     private String dob;
     private String profileImage;
-    private boolean isEnabled;
+    private boolean isVerified;
     private LocalDate createdAt;
     private LocalDate updatedAt;
     private LocalDateTime deactivatedAt;
